@@ -11,17 +11,8 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <script type="text/javascript">
-            var socket = new WebSocket('ws://localhost:8080/tollabo/ws');
-            socket.onmessage = function (event) {
-                alert(event.data);
-            };
-            function send(){
-                var input = document.getElementById('textField').value;
-                socket.send(input);
-            }
-        </script>
+        <script src="app.js" type="text/javascript"></script>
             <input id="textField" type="text"/>
-            <button onclick="send()">Send</button>
+            <button onclick="send();">Send</button>
     </body>
 </html>
