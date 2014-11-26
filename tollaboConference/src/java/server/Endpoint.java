@@ -34,7 +34,9 @@ public class Endpoint {
       // and broadcast the received message
       for(Session client : peers){
           System.out.println(message);
-          client.getBasicRemote().sendText(message);
+          if(client != session) {
+            client.getBasicRemote().sendText(message);
+          }
       }
     
   }

@@ -1,29 +1,170 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WebRTC Demo</title>  
     </head>
     <body>
-        <h1>Collaborative App</h1>
-        <div id="output"></div>
-        <button id="startButton">Start</button>
-        <div id='container'>
-            <div id='videos'>
-                <video width="160" height="120" id='localVideo' autoplay muted></video>
-                <video width="320" height="240" id='remoteVideo' autoplay></video>
-            </div>
-        </div>
-        <script type="text/javascript" src="webRTC.js"></script>
-        <script type="text/javascript" src="main.js"></script>
+        <h1>WebRTC Demo using WebSockets</h1>
+        <video id="sourcevid" autoplay style="width: 200px; height: 150px; border: 1px solid black;"></video>
+        <button type="button" onclick="startVideo();">Start video</button>
+        <button type="button" onclick="stopVideo();">Stop video</button>
+        <video id="remotevid" autoplay style="width: 200px; height: 150px; border: 1px solid black;"></video>
+        <button type="button" onclick="connect();">Connect</button>
+        <button type="button" onclick="hangUp();">Hang Up</button>
 
-        
+        <p>Run a node.js server and adapt the address in the code.</p>
+        <script>
+            var wsUri = "ws://" + document.location.host + document.location.pathname + "confereceEndpoint";
+            var socket = new WebSocket(wsUri);
+            var sourcevid = document.getElementById('sourcevid');
+            var remotevid = document.getElementById('remotevid');
+            var localStream = null;
+            var peerConn = null;
+            var started = false;
+            var caller = false;
 
+            var logg = function (s) {
+                console.log(s);
+            };
+
+            // when PeerConn is created, send setup data to peer via WebSocket
+            function onSignal(message) {
+                logg("Sending setup signal");
+                socket.send(message);
+            }
+
+            // when remote adds a stream, hand it on to the local video element
+            function onRemoteStreamAdded(event) {
+                logg("Added remote stream");
+                remotevid.src = window.webkitURL.createObjectURL(event.stream);
+            }
+
+            // when remote removes a stream, remove it from the local video element
+            function onRemoteStreamRemoved(event) {
+                logg("Remove remote stream");
+                remotevid.src = "";
+            }
+
+            function createPeerConnection() {
+                try {
+                    logg("Creating peer connection");
+                    peerConn = new webkitRTCPeerConnection(null);
+
+                } catch (e) {
+                    logg(e.message);
+                    try {
+                        peerConn = new webkitPeerConnection("STUN stun.l.google.com:19302", onSignal);
+                    } catch (e) {
+                        console.log("Failed to create PeerConnection, exception: " + e.message);
+                    }
+                }
+                peerConn.onaddstream = onRemoteStreamAdded;
+                peerConn.onremovestream = onRemoteStreamRemoved;
+            }
+
+            // start the connection upon user request
+            function connect() {
+                if (!started && localStream) {
+                    createPeerConnection();
+                    logg('Adding local stream...');
+                    peerConn.addStream(localStream);
+                    doCall();
+                    started = true;
+                    caller = true;
+                    logg('started');
+                } else {
+                    alert("Local stream not running yet.");
+                }
+            }
+
+            // accept connection request
+            socket.addEventListener("message", onMessage, false);
+            function onMessage(evt) {
+                logg("RECEIVED: " + evt.data);
+                if (!started) {
+                    createPeerConnection();
+                    logg('Adding local stream...');
+                    peerConn.addStream(localStream);
+                    started = true;
+                }
+                if (!caller) {
+                    // Message returned from other side
+                    logg('Processing signaling message...');
+                    peerConn.setRemoteDescription(new RTCSessionDescription(JSON.parse(evt.data)));
+                    doAnswer();
+                } else {
+                    peerConn.setRemoteDescription(new RTCSessionDescription(JSON.parse(evt.data)));
+                }
+            }
+
+            function hangUp() {
+                logg("Hang up.");
+                peerConn.close();
+                peerConn = null;
+                started = false;
+            }
+
+            function startVideo() {
+                // Replace the source of the video element with the stream from the camera
+                try { //try it with spec syntax
+                    navigator.webkitGetUserMedia({audio: true, video: true}, successCallback, errorCallback);
+                } catch (e) {
+                    navigator.webkitGetUserMedia("video,audio", successCallback, errorCallback);
+                }
+                function successCallback(stream) {
+                    sourcevid.src = window.webkitURL.createObjectURL(stream);
+                    localStream = stream;
+                }
+                function errorCallback(error) {
+                    console.error('An error occurred: [CODE ' + error.code + ']');
+                }
+            }
+            function stopVideo() {
+                sourcevid.src = "";
+            }
+
+            function handleCreateOfferError(event) {
+                console.log('createOffer() error: ', e);
+            }
+
+            function doCall() {
+                console.log('Sending offer to peer');
+                peerConn.createOffer(function (offerSDP) {
+                    peerConn.setLocalDescription(offerSDP);
+                    sendMessage(JSON.stringify(offerSDP));
+                }, null, sdpConstraints);
+            }
+            // Set up audio and video regardless of what devices are present.
+            var sdpConstraints = {'mandatory': {
+                    'OfferToReceiveAudio': true,
+                    'OfferToReceiveVideo': true}};
+            function doAnswer() {
+                console.log('Sending answer to peer.');
+                peerConn.createAnswer(function (answerSDP) {
+                    peerConn.setLocalDescription(answerSDP);
+                    sendMessage(JSON.stringify(answerSDP));
+                }, null, sdpConstraints);
+            }
+
+            function setLocalAndSendMessageAnswer(sessionDescription) {
+                // Set Opus as the preferred codec in SDP if Opus is present.
+                peerConn.setLocalDescription(sessionDescription);
+                console.log('setLocalAndSendMessage sending message', sessionDescription);
+                sendMessage(JSON.stringify(sessionDescription));
+            }
+
+            function setLocalAndSendMessage(sessionDescription) {
+                // Set Opus as the preferred codec in SDP if Opus is present.
+                peerConn.setLocalDescription(sessionDescription);
+                console.log('setLocalAndSendMessage sending message', sessionDescription);
+                sendMessage(JSON.stringify(sessionDescription));
+            }
+            function sendMessage(message) {
+                console.log('Client sending message: ', message);
+                // if (typeof message === 'object') {
+                //   message = JSON.stringify(message);
+                // }
+                socket.send(message);
+            }
+        </script>
     </body>
 </html>

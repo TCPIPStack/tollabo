@@ -23,10 +23,7 @@ var sdpConstraints = {'mandatory': {
         'OfferToReceiveVideo': true}};
 
 /////////////////////////////////////////////
-var startButton = document.getElementById("startButton");
-startButton.onclick = function () {
-    isInitiator = true;
-};
+
 var wsUri = "ws://" + document.location.host + document.location.pathname + "confereceEndpoint";
 var socket = new WebSocket(wsUri);
 
@@ -41,6 +38,29 @@ function onError(evt) {
 socket.onopen = function (evt) {
     onOpen(evt);
 };
+
+function iniFunction() {
+    isInitiator = true;
+    var constraints = {video: true, audio: true};
+    getUserMedia(constraints, handleUserMedia, handleUserMediaError);
+    console.log('Getting user media with constraints', constraints);
+
+    if (location.hostname !== "localhost") {
+        requestTurn('https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913');
+    }
+}
+
+function awFunction() {
+    console.log('readyCLick')
+    isInitiator = false;
+    var constraints = {video: true, audio: true};
+    getUserMedia(constraints, handleUserMedia, handleUserMediaError);
+    console.log('Getting user media with constraints', constraints);
+
+    if (location.hostname !== "localhost") {
+        requestTurn('https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913');
+    }
+}
 
 function onOpen() {
     writeToScreen("Connected to " + wsUri);
@@ -63,15 +83,17 @@ socket.onmessage = function (message) {
     if (message.data === 'got user media') {
         maybeStart();
     } else if (message.data.toString().indexOf('offer') !== -1) {
-        console.log('got an offer');
+        console.log('!!!!got an offer');
         if (!isInitiator && !isStarted) {
             maybeStart();
         }
         pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(message.data)));
         doAnswer();
     } else if (message.data.toString().indexOf('answer') !== -1 && isStarted) {
+        console.log('!!!!got an answer');
         pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(message.data)));
-    } else if (message.data.toString().indexOf('canditade')!== -1 && isStarted) {
+    } else if (message.data.toString().indexOf('canditade') !== -1 && isStarted) {
+        console.log('!!!!got an canditade');
         var candidate = new RTCIceCandidate({
             sdpMLineIndex: JSON.parse(message.data).label,
             candidate: JSON.parse(message.data).candidate
@@ -99,15 +121,6 @@ function handleUserMedia(stream) {
 
 function handleUserMediaError(error) {
     console.log('getUserMedia error: ', error);
-}
-
-var constraints = {video: true, audio: true};
-getUserMedia(constraints, handleUserMedia, handleUserMediaError);
-
-console.log('Getting user media with constraints', constraints);
-
-if (location.hostname !== "localhost") {
-    requestTurn('https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913');
 }
 
 function maybeStart() {
