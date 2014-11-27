@@ -8,6 +8,7 @@ package de.tubs.tollabo.ws;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -19,6 +20,7 @@ import javax.websocket.server.ServerEndpoint;
  * @author Benni
  */
 @ServerEndpoint(value = "/ws")
+@ApplicationScoped
 public class Endpoint {
     
     private final List<Session> sessions = new ArrayList<>();
@@ -26,6 +28,7 @@ public class Endpoint {
     @OnOpen
     public void connect(Session session){
         this.sessions.add(session);
+        System.out.println("client connected:"+session.getId());
     }
     
     @OnClose
@@ -34,10 +37,14 @@ public class Endpoint {
     }
     
     @OnMessage
-    public void onMessage(String msg){
-        for (Session session : sessions) {
-            session.getAsyncRemote().sendText(msg+" your mom!");
+    public void onMessage(Session session, String msg){
+        for (Session s : sessions) {
+            if(session.getId().equals(s.getId())){
+                continue;
+            }
+            s.getAsyncRemote().sendText(msg);
         }
+        System.out.println("received message: "+msg);
     }
     
 }
