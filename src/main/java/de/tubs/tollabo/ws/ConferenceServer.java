@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package server;
+package de.tubs.tollabo.ws;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.faces.bean.ApplicationScoped;
 import javax.websocket.MessageHandler;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -22,7 +23,8 @@ import javax.websocket.server.ServerEndpoint;
  * @author Marcel
  */
 @ServerEndpoint("/confereceEndpoint")
-public class Endpoint {
+@ApplicationScoped
+public class ConferenceServer {
 
     private static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
 
