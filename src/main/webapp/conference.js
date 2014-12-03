@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-var wsUri = "ws://" + document.location.host + document.location.pathname + "confereceEndpoint";
+            var wsUri = "ws://" + document.location.host + document.location.pathname + "confereceEndpoint";
             var socket = new WebSocket(wsUri);
             var sourcevid = document.getElementById('sourcevid');
             var remotevid = document.getElementById('remotevid');
@@ -25,6 +25,7 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
             function onRemoteStreamAdded(event) {
                 logg("Added remote stream" + event.stream);
                 logg("remote stream tracks" + JSON.stringify(event.stream.getVideoTracks()));
+                remotevid = document.getElementById('remotevid');
                 remotevid.src = window.URL.createObjectURL(event.stream);
                 remotevid.play();
                 for (index = 0; index < candidates.length; index++) {
@@ -58,7 +59,7 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
                         'username': '28224511:1379330808'
                     }
                 ]
-            }
+            };
             function createPeerConnection() {
                 try {
                     logg("Creating peer connection");
@@ -75,7 +76,6 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
 
             function onIceCandidate(event) {
                 if (event.candidate) {
-                    var candidate = event.candidate;
                     sendMessage({
                         type: 'candidate',
                         label: event.candidate.sdpMLineIndex,
@@ -87,8 +87,8 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
             }
 
             // start the connection upon user request
-            function connect() {
-                if (!started && localStream) {
+            function connectToChat() {
+                if (!started && lStreamStarted) {
                     createPeerConnection();
                     logg('Adding local stream...');
                     peerConn.addStream(localStream);
@@ -97,7 +97,7 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
                     caller = true;
                     logg('started');
                 } else {
-                    alert("Local stream not running yet.");
+                    alert("Local Stream not started!")
                 }
             }
 
@@ -108,7 +108,7 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
             function onMessage(evt) {
                 var msg = JSON.parse(evt.data);
                 logg("RECEIVED: " + evt.data);
-                if (!started) {
+                if (!started && msg.type === 'offer') {
                     createPeerConnection();
                     peerConn.setRemoteDescription(new RTCSessionDescription(msg));
                     peerConn.addStream(localStream);
@@ -162,15 +162,19 @@ var wsUri = "ws://" + document.location.host + document.location.pathname + "con
                 peerConn = null;
                 started = false;
             }
-
+            
+            var lStreamStarted = false;
             function startVideo() {
                 // Replace the source of the video element with the stream from the camera
+                logg("startVideo")
                 try { //try it with spec syntax
                     navigator.webkitGetUserMedia({audio: true, video: true}, successCallback, errorCallback);
                 } catch (e) {
                     navigator.webkitGetUserMedia("video,audio", successCallback, errorCallback);
                 }
+                lStreamStarted = true;
                 function successCallback(stream) {
+                                    sourcevid = document.getElementById('sourcevid');
                     sourcevid.src = window.webkitURL.createObjectURL(stream);
                     localStream = stream;
                 }

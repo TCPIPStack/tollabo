@@ -9,19 +9,20 @@ and open the template in the editor.
         <title>Tollabo</title>
         <meta charset="windows-1252">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="canvas.js" type="text/javascript"></script>
+        <script src="draw.js" type="text/javascript"></script>
+        <script src="client.js" type="text/javascript"></script>
+        <script src="conference.js" type="text/javascript"></script>
     </head>
     <body>
-        <script type="text/javascript">
-            var socket = new WebSocket('ws://localhost:8080/tollabo/ws');
-            socket.onmessage = function (event) {
-                alert(event.data);
-            };
-            function send(){
-                var input = document.getElementById('textField').value;
-                socket.send(input);
-            }
-        </script>
-            <input id="textField" type="text"/>
-            <button onclick="send()">Send</button>
+        <h1>WebRTC Demo using WebSockets</h1>
+        <video id="sourcevid" autoplay muted style="width: 200px; height: 150px; border: 1px solid black;"><source src="" type="video/ogg" /></video>
+        <button type="button" onclick="startVideo();">Start video</button>
+        <button type="button" onclick="stopVideo();">Stop video</button>
+        <video id="remotevid" autoplay style="width: 300px; height: 250px; border: 1px solid black;"><source src="" type="video/ogg" /></video>
+        <button type="button" onclick="connectToChat();">Connect</button>
+        <button type="button" onclick="hangUp();">Hang Up</button>
+        <canvas id="canvas"></canvas>
     </body>
 </html>
