@@ -1,43 +1,56 @@
 function drawInit() {
     canvas.init();
     
-    var startDraw = function(evt) {
+    var startMouseDraw = function(evt) {
        var offset = $(this).offset();
        var pos = {
-         x: evt.clientX - offset.left,
-         y: evt.clientY - offset.top
+         x: evt.pageX - offset.left,
+         y: evt.pageY - offset.top
        };
        canvas.moveTo(pos);
        canvas.paint(pos);
        send({"canvas": ["moveTo", pos]});
        send({"canvas": ["paint", pos]});
-       canvas.penDown = true;
+       if(evt.type === 'mousedown'){
+           canvas.penDown = true;
+       }
      };
    
-     var draw = function(evt) {
-         evt.preventDefault();
+     var mouseDraw = function(evt) {
        if (canvas.penDown) {
          var offset = $(this).offset();
          var pos = {
-           x: evt.clientX - offset.left,
-           y: evt.clientY - offset.top
+           x: evt.pageX - offset.left,
+           y: evt.pageY - offset.top
          };
          canvas.paint(pos);
          send({"canvas": ["paint", pos]});
        }
      };
      
-     var endDraw = function(evt) {
+     var touchDraw = function(evt) {
+        evt.preventDefault();
+        var offset = $(this).offset();
+        var pos = {
+          x: evt.touches[0].pageX - offset.left,
+          y: evt.touches[0].pageY - offset.top
+        };
+        canvas.paint(pos);
+        send({"canvas": ["paint", pos]});
+     };
+     
+     var endMouseDraw = function(evt) {
        canvas.penDown = false;
      };
      
-     document.getElementById('canvas').addEventListener('touchstart', startDraw);
-     $('#canvas').mousedown(startDraw);
+     var canvasElement = document.getElementById('canvas');
+     canvasElement.addEventListener('touchstart', startMouseDraw, false);
+     $('#canvas').mousedown(startMouseDraw);
 
-     document.getElementById('canvas').addEventListener('touchmove', draw);
-     $('#canvas').mousemove(draw);
+     canvasElement.addEventListener('touchmove', touchDraw, false);
+     $('#canvas').mousemove(mouseDraw);
      
-     document.getElementById('canvas').addEventListener('touchend', endDraw);
-     $('#canvas').mouseup(endDraw);
+     canvasElement.addEventListener('touchend', endMouseDraw, false);
+     $('#canvas').mouseup(endMouseDraw);
     
 };

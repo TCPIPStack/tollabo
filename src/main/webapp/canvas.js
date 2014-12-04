@@ -1,6 +1,6 @@
 var canvas = {
-  width: 2000,
-  height: 2000,
+  width: 800,
+  height: 600,
   ctx: null,
   penDown: false,
   showGrid: true,
@@ -9,9 +9,10 @@ var canvas = {
     this.ctx = document.getElementById('canvas').getContext("2d");
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = "round";
+    this.ctx.canvas.width = this.width;
+    this.ctx.canvas.height = this.height;
     this.setColor('red');
-    this.lineWidth(3);
-    this.clear();
+    this.lineWidth(7);
   },
 
   clear: function() {
@@ -27,7 +28,7 @@ var canvas = {
     this.ctx.lineTo(pos.x, pos.y);
     this.ctx.stroke();
     this.ctx.beginPath();
-    this.ctx.arc(pos.x, pos.y, this.thickness, 0, Math.PI*2);
+    this.ctx.arc(pos.x, pos.y, 3, 0, Math.PI*2);
     this.ctx.fill();
     this.ctx.beginPath();
     this.ctx.moveTo(pos.x, pos.y);
@@ -44,6 +45,6 @@ var canvas = {
 
   lineWidth: function(width) {
     this.thickness = width;
-    this.ctx.lineWidth = width * 2;
+    this.ctx.lineWidth = width;
   }
 };

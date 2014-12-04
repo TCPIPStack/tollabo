@@ -11,13 +11,14 @@ function connect(){
     
     ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
-
+        var fct;
+        var val;
         for (var key in data) {
-
           if (key === 'canvas') {
             fct = data[key][0];
             val = data[key][1];
             canvas[fct](val);
+            console.log(fct+ " " + val);
           }
         }
     };
@@ -32,7 +33,7 @@ function connect(){
 }
 
 function send(data) {
-  if (ws && ws.readyState == 1) {
+  if (ws && ws.readyState === 1) {
     ws.send(JSON.stringify(data));
   }
 }

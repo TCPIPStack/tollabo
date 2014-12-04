@@ -28,7 +28,6 @@ public class Endpoint {
     @OnOpen
     public void connect(Session session){
         this.sessions.add(session);
-        System.out.println("client connected:"+session.getId());
     }
     
     @OnClose
