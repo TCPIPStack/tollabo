@@ -1,231 +1,99 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-            var wsUri = "ws://" + document.location.host + document.location.pathname + "confereceEndpoint";
+            var connection = new RTCMultiConnection();
+            var wsUri = "ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/confereceEndpoint";
             var socket = new WebSocket(wsUri);
-            var sourcevid = document.getElementById('sourcevid');
-            var remotevid = document.getElementById('remotevid');
-            var localStream = null;
-            var peerConn = null;
-            var started = false;
-            var caller = false;
+            connection.socket = socket;
 
-            var logg = function (s) {
-                console.log(s);
+            connection.session = {
+                audio: true,
+                video: false
             };
-
-            // when PeerConn is created, send setup data to peer via WebSocket
-            function onSignal(message) {
-                logg("Sending setup signal");
-                socket.send(message);
-            }
-            // when remote adds a stream, hand it on to the local video element
-            function onRemoteStreamAdded(event) {
-                logg("Added remote stream" + event.stream);
-                logg("remote stream tracks" + JSON.stringify(event.stream.getVideoTracks()));
-                remotevid = document.getElementById('remotevid');
-                remotevid.src = window.URL.createObjectURL(event.stream);
-                remotevid.play();
-                for (index = 0; index < candidates.length; index++) {
-                    try {
-                        if (!candidates[index] || candidates[index] !== null) {
-                            peerConn.addIceCandidate(candidates[index]);
-                            candidates[index] = null;
-                        }
-                    } catch (e) {
-                        logg('Exception' + JSON.stringify(e))
-                    }
-                }
-            }
-
-            // when remote removes a stream, remove it from the local video element
-            function onRemoteStreamRemoved(event) {
-                logg("Remove remote stream");
-                remotevid.src = "";
-            }
-
-            var pc_config = {
-                'iceServers': [
-                    {
-                        'url': 'turn:192.158.29.39:3478?transport=udp',
-                        'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                        'username': '28224511:1379330808'
-                    },
-                    {
-                        'url': 'turn:192.158.29.39:3478?transport=tcp',
-                        'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
-                        'username': '28224511:1379330808'
-                    }
-                ]
+            connection.onstream = function (e) {
+                e.mediaElement.width = 600;
+                videosContainer.insertBefore(e.mediaElement, videosContainer.firstChild);
+                rotateVideo(e.mediaElement);
+                scaleVideos();
             };
-            function createPeerConnection() {
-                try {
-                    logg("Creating peer connection");
-                    peerConn = new webkitRTCPeerConnection(pc_config);
-                    peerConn.onicecandidate = onIceCandidate;
-                    console.log("Created RTCPeerConnnection with config:\n" + "  \"" +
-                            JSON.stringify(pc_config) + "\".");
-                } catch (e) {
-                    logg(e.message);
-                }
-                peerConn.onaddstream = onRemoteStreamAdded;
-                peerConn.onremovestream = onRemoteStreamRemoved;
+            function rotateVideo(mediaElement) {
+                mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
+                setTimeout(function () {
+                    mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
+                }, 1000);
             }
-
-            function onIceCandidate(event) {
-                if (event.candidate) {
-                    sendMessage({
-                        type: 'candidate',
-                        label: event.candidate.sdpMLineIndex,
-                        id: event.candidate.sdpMid,
-                        candidate: event.candidate.candidate});
-                } else {
-                    console.log("End of candidates.");
-                }
-            }
-
-            // start the connection upon user request
-            function connectToChat() {
-                if (!started && lStreamStarted) {
-                    createPeerConnection();
-                    logg('Adding local stream...');
-                    peerConn.addStream(localStream);
-                    doCall();
-                    started = true;
-                    caller = true;
-                    logg('started');
-                } else {
-                    alert("Local Stream not started!")
-                }
-            }
-
-            // accept connection request
-            var gotAnswer = false;
-            var candidates = [];
-            socket.addEventListener("message", onMessage, false);
-            function onMessage(evt) {
-                var msg = JSON.parse(evt.data);
-                logg("RECEIVED: " + evt.data);
-                if (!started && msg.type === 'offer') {
-                    createPeerConnection();
-                    peerConn.setRemoteDescription(new RTCSessionDescription(msg));
-                    peerConn.addStream(localStream);
-                    logg('Adding local stream...');
-                    started = true;
-                    logg('SEND ANSWER...');
-                    doAnswer();
-                }
-                if (evt.data.toString().indexOf('candidate') !== -1) {
-                    logg("Candidates: " + candidates.length);
-                    logg("Candidate: " + JSON.stringify(msg));
-
-                    /*peerConn.addIceCandidate(new RTCIceCandidate({
-                     sdpMLineIndex: candidate.sdpMLineIndex,
-                     candidate: candidate.candidate
-                     }));*/
-                    if (gotAnswer) {
-                        peerConn.addIceCandidate(new RTCIceCandidate({
-                            sdpMLineIndex: msg.label,
-                            candidate: msg.candidate
-                        }));
+            connection.onstreamended = function (e) {
+                e.mediaElement.style.opacity = 0;
+                rotateVideo(e.mediaElement);
+                setTimeout(function () {
+                    if (e.mediaElement.parentNode) {
+                        e.mediaElement.parentNode.removeChild(e.mediaElement);
+                    }
+                    scaleVideos();
+                }, 1000);
+            };
+            var sessions = {};
+            connection.onNewSession = function (session) {
+                if (sessions[session.sessionid])
+                    return;
+                sessions[session.sessionid] = session;
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td><strong>' + session.extra['session-name'] + '</strong> is running a conference!</td>' +
+                        '<td><button class="join">Join</button></td>';
+                roomsList.insertBefore(tr, roomsList.firstChild);
+                var joinRoomButton = tr.querySelector('.join');
+                joinRoomButton.setAttribute('data-sessionid', session.sessionid);
+                joinRoomButton.onclick = function () {
+                    this.disabled = true;
+                    var sessionid = this.getAttribute('data-sessionid');
+                    session = sessions[sessionid];
+                    if (!session)
+                        throw 'No such session exists.';
+                    connection.join(session);
+                };
+            };
+            var videosContainer = document.getElementById('videos-container') || document.body;
+            var roomsList = document.getElementById('rooms-list');
+            document.getElementById('setup-new-conference').onclick = function () {
+                this.disabled = true;
+                connection.extra = {
+                    'session-name': document.getElementById('conference-name').value || 'Anonymous'
+                };
+                connection.open();
+            };
+// setup signaling to search existing sessions
+            connection.connect();
+            (function () {
+                var uniqueToken = document.getElementById('unique-token');
+                if (uniqueToken)
+                    if (location.hash.length > 2)
+                        uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center;"><a href="' + location.href + '" target="_blank">Share this link</a></h2>';
+                    else
+                        uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace(/\./g, '-');
+            })();
+            function scaleVideos() {
+                var videos = document.querySelectorAll('video'),
+                        length = videos.length,
+                        video;
+                var minus = 130;
+                var windowHeight = 700;
+                var windowWidth = 600;
+                var windowAspectRatio = windowWidth / windowHeight;
+                var videoAspectRatio = 4 / 3;
+                var blockAspectRatio;
+                var tempVideoWidth = 0;
+                var maxVideoWidth = 0;
+                for (var i = length; i > 0; i--) {
+                    blockAspectRatio = i * videoAspectRatio / Math.ceil(length / i);
+                    if (blockAspectRatio <= windowAspectRatio) {
+                        tempVideoWidth = videoAspectRatio * windowHeight / Math.ceil(length / i);
                     } else {
-                        candidates[candidates.length] = new RTCIceCandidate({
-                            sdpMLineIndex: msg.label,
-                            candidate: msg.candidate
-                        });
+                        tempVideoWidth = windowWidth / i;
                     }
-
+                    if (tempVideoWidth > maxVideoWidth)
+                        maxVideoWidth = tempVideoWidth;
                 }
-                if (msg.type === 'answer') {
-                    logg('RECIEVED ANSWER...');
-                    peerConn.setRemoteDescription(new RTCSessionDescription(msg));
-                    gotAnswer = true;
-                    var index;
-                    for (index = 0; index < candidates.length; index++) {
-                        try {
-                            if (!candidates[index] || candidates[index] !== null) {
-                                peerConn.addIceCandidate(candidates[index]);
-                                candidates[index] = null;
-                            }
-                        } catch (e) {
-                            logg('Exception' + JSON.stringify(e))
-                        }
-                    }
+                for (var i = 0; i < length; i++) {
+                    video = videos[i];
+                    if (video)
+                        video.width = maxVideoWidth - minus;
                 }
             }
-
-            function hangUp() {
-                logg("Hang up.");
-                peerConn.close();
-                peerConn = null;
-                started = false;
-            }
-            
-            var lStreamStarted = false;
-            function startVideo() {
-                // Replace the source of the video element with the stream from the camera
-                logg("startVideo")
-                try { //try it with spec syntax
-                    navigator.webkitGetUserMedia({audio: true, video: true}, successCallback, errorCallback);
-                } catch (e) {
-                    navigator.webkitGetUserMedia("video,audio", successCallback, errorCallback);
-                }
-                lStreamStarted = true;
-                function successCallback(stream) {
-                                    sourcevid = document.getElementById('sourcevid');
-                    sourcevid.src = window.webkitURL.createObjectURL(stream);
-                    localStream = stream;
-                }
-                function errorCallback(error) {
-                    console.error('An error occurred: [CODE ' + error.code + ']');
-                }
-            }
-            function stopVideo() {
-                sourcevid.src = "";
-            }
-
-            function handleCreateOfferError(event) {
-                console.log('createOffer() error: ', e);
-            }
-
-            function doCall() {
-                console.log('Sending offer to peer');
-                peerConn.createOffer(function (offerSDP) {
-                    peerConn.setLocalDescription(new RTCSessionDescription(offerSDP), function () {
-                        sendMessage(offerSDP);
-                    });
-                }, null, sdpConstraints);
-            }
-            // Set up audio and video regardless of what devices are present.
-            var sdpConstraints = {'mandatory': {
-                    'OfferToReceiveAudio': true,
-                    'OfferToReceiveVideo': true}};
-            function doAnswer() {
-                console.log('Sending answer to peer.');
-                peerConn.createAnswer(function (answerSDP) {
-                    peerConn.setLocalDescription(new RTCSessionDescription(answerSDP), function () {
-                        sendMessage(answerSDP);
-                        var index;
-                        logg('LATER ADDING ANSWER' + candidates.length);
-                        for (index = 0; index < candidates.length; index++) {
-                            try {
-                                if (!candidates[index] || candidates[index] !== null) {
-                                    peerConn.addIceCandidate(candidates[index]);
-                                    candidates[index] = null;
-                                }
-                            } catch (e) {
-                                logg('Exception' + JSON.stringify(e))
-                            }
-                        }
-                    });
-                }, null, sdpConstraints);
-            }
-
-            function sendMessage(message) {
-                var msgString = JSON.stringify(message);
-                console.log('CLIENT sending ', msgString);
-                socket.send(msgString);
-            }
-
+            window.onresize = scaleVideos;
