@@ -43,7 +43,6 @@ public class Endpoint {
             }
             s.getAsyncRemote().sendText(msg);
         }
-        System.out.println("received message: "+msg);
     }
     
 }

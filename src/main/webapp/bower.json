@@ -1,0 +1,25 @@
+{
+  "name": "tollabo",
+  "version": "0.0.0",
+  "homepage": "https://github.com/TCPIPStack/tollabo",
+  "authors": [
+    "TCPIPStack <benni.bode@freenet.de>"
+  ],
+  "description": "team collaboration app",
+  "keywords": [
+    "team",
+	"collaboration",
+	"tollabo"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.2"
+  }
+}
