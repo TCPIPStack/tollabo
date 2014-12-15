@@ -11,8 +11,6 @@
         <script src="RTCMultiConnection.js" type="text/javascript"></script>
 
         <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
-        <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
-        <link rel="import" href="bower_components/core-drawer-panel/core-drawer-panel.html">
         <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
         <link rel="import" href="bower_components/core-menu/core-menu.html">
         <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
@@ -21,6 +19,7 @@
         <link rel="import" href="bower_components/paper-item/paper-item.html">
         <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
         <link rel="import" href="bower_components/paper-tabs/paper-tab.html">
+        <link rel="import" href="bower_components/core-pages/core-pages.html">
         
         <style>
             html,body {
@@ -71,28 +70,20 @@
             <paper-icon-button icon="more-vert"></paper-icon-button>
             
             <div class="bottom fit" horizontal layout>
-                <paper-tabs id="tabs" selected="all" self-end>
-                  <paper-tab name="drawing">Drawing</paper-tab>
-                  <paper-tab name="video">Video</paper-tab>
-                </paper-tabs>                
+                <paper-tabs selected="{{selected}}">
+                 <paper-tab>Tab 1</paper-tab>
+                 <paper-tab>Tab 2</paper-tab>
+                 <paper-tab>Tab 3</paper-tab>
+               </paper-tabs>
+
+               <core-pages selected="{{selected}}">
+                 <div>Page 1</div>
+                 <div>Page 2</div>
+                 <div>Page 3</div>
+               </core-pages>                
             </div>
           </core-toolbar>
-
-          <div class="container" layout vertical center>
-            <h1>WebRTC Demo using WebSockets</h1>
-            <!-- just copy this <section> and next script -->
-            <section class="experiment">
-                <section>
-                    <input type="text" id="conference-name"> <br>
-                    <button id="setup-new-conference" class="setup">Setup New Conference</button>
-                </section>
-                <!-- list of all available broadcasting rooms -->
-                <table style="width: 100%;" id="rooms-list"></table>
-                <!-- local/remote videos container -->
-                <div id="videos-container"></div>
-            </section>
-            <script src="conference.js" type="text/javascript"></script>
-          </div>
+         
 
         </core-header-panel>
     </body>

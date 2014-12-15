@@ -11,7 +11,6 @@
         <script src="RTCMultiConnection.js" type="text/javascript"></script>
 
         <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
-        <link rel="import" href="bower_components/core-animated-pages/core-animated-pages.html">
         <link rel="import" href="bower_components/core-drawer-panel/core-drawer-panel.html">
         <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
         <link rel="import" href="bower_components/core-menu/core-menu.html">
@@ -72,12 +71,12 @@
             
             <div class="bottom fit" horizontal layout>
                 <paper-tabs id="tabs" selected="all" self-end>
-                  <paper-tab name="drawing">Drawing</paper-tab>
+                  <paper-tab flex name="drawing">Drawing</paper-tab>
                   <paper-tab name="video">Video</paper-tab>
+                  <paper-tab name="images">Images</paper-tab>
                 </paper-tabs>                
             </div>
           </core-toolbar>
-
           <div class="container" layout vertical center>
             <h1>WebRTC Demo using WebSockets</h1>
             <!-- just copy this <section> and next script -->
