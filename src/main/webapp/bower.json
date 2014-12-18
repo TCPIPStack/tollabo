@@ -8,8 +8,8 @@
   "description": "team collaboration app",
   "keywords": [
     "team",
-	"collaboration",
-	"tollabo"
+    "collaboration",
+    "tollabo"
   ],
   "license": "MIT",
   "ignore": [
@@ -20,6 +20,9 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#~0.5.2"
+    "polymer": "Polymer/polymer#~0.5.2",
+    "polymer-gestures": "Polymer/polymer-gestures#~0.5.2",
+    "core-scaffold": "Polymer/core-scaffold#~0.5.2",
+    "flatiron-director": "Polymer/flatiron-director#~0.5.0"
   }
 }

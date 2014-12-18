@@ -21,18 +21,20 @@ import javax.websocket.server.ServerEndpoint;
  */
 @ServerEndpoint(value = "/ws")
 @ApplicationScoped
-public class Endpoint {
+public class DrawingEndpoint {
     
     private final List<Session> sessions = new ArrayList<>();
     
     @OnOpen
     public void connect(Session session){
         this.sessions.add(session);
+        System.out.println("connection established with: "+session.getId());
     }
     
     @OnClose
     public void dissconect(Session session){
         this.sessions.remove(session);
+        System.out.println("connection closed by: "+session.getId());
     }
     
     @OnMessage

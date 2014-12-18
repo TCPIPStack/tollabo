@@ -1,4 +1,4 @@
-var canvas = {    
+Polymer({    
     
     canvasElement : null,
     width: 800,
@@ -9,7 +9,7 @@ var canvas = {
     showGrid: true,
 
     init: function() {
-      this.canvasElement = document.getElementById('canvas');
+      this.canvasElement = this.$.canvas;
       this.ctx = this.canvasElement.getContext("2d");
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = "round";
@@ -52,4 +52,4 @@ var canvas = {
       this.ctx.lineWidth = width;
     }
     
-};    
+});    

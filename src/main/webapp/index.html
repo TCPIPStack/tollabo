@@ -2,17 +2,19 @@
 <html>
     <head>
         <title>Tollabo</title>
+        <link rel="icon" type="image/png" href="images/tollabo-logo-small.png">
         <meta charset="windows-1252">
         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-        <script src="canvas.js" type="text/javascript"></script>
-        <script src="draw.js" type="text/javascript"></script>
         <script src="RTCMultiConnection.js" type="text/javascript"></script>
+        
+
 
         <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
         <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
         <link rel="import" href="bower_components/core-menu/core-menu.html">
+        <link rel="import" href="bower_components/core-item/core-item.html">
         <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
         <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
         <link rel="import" href="bower_components/paper-dropdown/paper-dropdown.html">
@@ -20,6 +22,8 @@
         <link rel="import" href="bower_components/paper-tabs/paper-tabs.html">
         <link rel="import" href="bower_components/paper-tabs/paper-tab.html">
         <link rel="import" href="bower_components/core-pages/core-pages.html">
+        <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
+        <link rel="import" href="bower_components/flatiron-director/flatiron-director.html">
         
         <style>
             html,body {
@@ -27,6 +31,19 @@
               margin: 0;
               background-color: #E5E5E5;
               font-family: 'RobotoDraft', sans-serif;
+            }
+            core-pages {
+              width: 75%;
+              height: 75%;
+              border: none;
+              -webkit-user-select: none;
+              border-radius: 5px;
+              transform: translateZ(0);
+            }
+            core-pages > div {
+              display: flex;
+              
+              
             }
             core-header-panel {
               height: 100%;
@@ -37,14 +54,8 @@
               background: #065B81;
               color: white;
             }
-            #tabs {
-              width: 100%;
-              margin: 0;
-              -webkit-user-select: none;
-              -moz-user-select: none;
-              -ms-user-select: none;
-              user-select: none;
-                  text-transform: uppercase;
+            paper-item {
+                color: black;
             }
             .container {
               width: 80%;
@@ -57,34 +68,83 @@
               .container {
                 width: 400px;
               }
+              a:link, a:visited { 
+                color: black;
+                text-decoration: none;
+                cursor: auto;
+              }
             }
         </style>
         
     </head>
-    <body fullbleed layout vertical>
-        <core-header-panel>
+    <body unresolved fullbleed layout vertical>
+        
+        <template is="auto-binding">
+        
+            <flatiron-director route="{{route}}" autoHash
+                         on-director-route="{{routeChanged}}"></flatiron-director>
 
-          <core-toolbar class="medium-tall">
-            <paper-icon-button icon="menu"></paper-icon-button>
-            <div flex>tollabo</div>
-            <paper-icon-button icon="more-vert"></paper-icon-button>
-            
-            <div class="bottom fit" horizontal layout>
-                <paper-tabs selected="{{selected}}">
-                 <paper-tab>Tab 1</paper-tab>
-                 <paper-tab>Tab 2</paper-tab>
-                 <paper-tab>Tab 3</paper-tab>
-               </paper-tabs>
+            <core-scaffold fit>
 
-               <core-pages selected="{{selected}}">
-                 <div>Page 1</div>
-                 <div>Page 2</div>
-                 <div>Page 3</div>
-               </core-pages>                
-            </div>
-          </core-toolbar>
-         
+                <core-header-panel navigation mode="seam" flex>
+                    <core-toolbar>tollabo</core-toolbar>
+                    <core-menu>
+                        <paper-item icon="" label="drawing">
+                          <a href="#drawing">drawing</a>
+                        </paper-item>
+                        <paper-item >
+                          <a href="#video">video</a>
+                        </paper-item>
+                        <paper-item >
+                          <a href="#gallery">gallery</a>
+                        </paper-item>
+                    </core-menu>                
 
-        </core-header-panel>
+                </core-header-panel>
+
+                <core-toolbar tool flex>
+                  <div flex>{{route}}</div>
+                  <paper-menu-button>
+                        <paper-icon-button icon="more-vert">
+                        </paper-icon-button>
+                        <paper-dropdown class="dropdown" halign="right">
+                              <core-menu class="menu">
+                                  <paper-item>Settings</paper-item>
+                                  <paper-item>About tollabo</paper-item>
+                              </core-menu>
+                        </paper-dropdown>
+                  </paper-menu-button>
+                </core-toolbar>
+
+                <div layout horizontal center center-justified fit style="overflow-x: hidden;">
+                  <core-pages selected="{{route}}" valueattr="hash">
+                      <div hash="drawing">
+                        <canvas id="canvas" style="border:1px solid #ccc"></canvas>
+                        <script src="canvas.js" type="text/javascript"></script>
+                        <script src="draw.js" type="text/javascript"></script>
+                        <script src="wsClient.js" type="text/javascript"></script>
+                      </div>
+                      <div hash="video">
+                          <h1>WebRTC Demo using WebSockets</h1><br>
+                            <!-- just copy this <section> and next script -->
+                            <section class="experiment">
+                                <section>
+                                    <input type="text" id="conference-name"> <br>
+                                    <button id="setup-new-conference" class="setup">Setup New Conference</button>
+                                </section>
+                                <!-- list of all available broadcasting rooms -->
+                                <table style="width: 100%;" id="rooms-list"></table>
+                                <!-- local/remote videos container -->
+                                <div id="videos-container"></div>
+                            </section>
+                            <script src="conference.js" type="text/javascript"></script>
+                      </div>
+                      <div hash="gallery">
+                          gallery
+                      </div>
+                  </core-pages>
+                </div>
+            </core-scaffold>
+        </template>
     </body>
 </html>
