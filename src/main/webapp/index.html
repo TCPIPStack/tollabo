@@ -33,15 +33,14 @@
               font-family: 'RobotoDraft', sans-serif;
             }
             core-pages {
-              width: 75%;
-              height: 75%;
+              width: 100%;
+              height: 100%;
               border: none;
               -webkit-user-select: none;
               border-radius: 5px;
               transform: translateZ(0);
             }
             core-pages > div {
-              display: flex;
               
               
             }
@@ -116,7 +115,7 @@
                   </paper-menu-button>
                 </core-toolbar>
 
-                <div layout horizontal center center-justified fit style="overflow-x: hidden;">
+                <div layout vertical center center-justified fit style="overflow-x: hidden;">
                   <core-pages selected="{{route}}" valueattr="hash">
                       <div hash="drawing">
                         <canvas id="canvas" style="border:1px solid #ccc"></canvas>

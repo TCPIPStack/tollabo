@@ -6,7 +6,7 @@
 
             connection.session = {
                 audio: true,
-                video: false
+                video: true
             };
             connection.onstream = function (e) {
                 e.mediaElement.width = 600;

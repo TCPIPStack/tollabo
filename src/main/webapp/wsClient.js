@@ -12,8 +12,8 @@ window.onload = function() {
 //});
 
 function connect(){
-    //ws = new WebSocket('ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws');
-    ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws');
+    ws = new WebSocket('ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws');
+    //ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws');
     
     ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
