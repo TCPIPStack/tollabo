@@ -1,6 +1,6 @@
 var connection = new RTCMultiConnection();
-            var wsUri = "ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/confereceEndpoint";
-            //var wsUri = "ws://192.168.0.2:8080/tollabo/confereceEndpoint";
+            //var wsUri = "ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/confereceEndpoint";
+            var wsUri = "ws://192.168.0.2:8080/tollabo/confereceEndpoint";
             var socket = new WebSocket(wsUri);
             connection.socket = socket;
 

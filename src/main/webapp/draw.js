@@ -9,9 +9,9 @@ function drawInit() {
           y: evt.pageY - offset.top
         };
         canvas.moveTo(pos);
-        canvas.paint(pos);
+        canvas.paint(pos, canvas.color);
         send({"canvas": ["moveTo", pos]});
-        send({"canvas": ["paint", pos]});
+        send({"canvas": ["paint", pos, canvas.color]});
         if(evt.type === 'mousedown'){
             canvas.penDown = true;
         }
@@ -25,7 +25,7 @@ function drawInit() {
           y: evt.pageY - offset.top
         };
         canvas.paint(pos);
-        send({"canvas": ["paint", pos]});
+        send({"canvas": ["paint", pos, canvas.color]});
       }
     };
 
@@ -42,7 +42,7 @@ function drawInit() {
             canvas.fingerUp = false;
         }
         canvas.paint(pos);
-        send({"canvas": ["paint", pos]});
+        send({"canvas": ["paint", pos, canvas.color]});
     };
      
     var touchEnd = function(evt) {

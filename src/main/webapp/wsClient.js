@@ -12,8 +12,8 @@ window.onload = function() {
 //});
 
 function connect(){
-    ws = new WebSocket("ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws/"+collabID);
-    //ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws')
+    //ws = new WebSocket("ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws/"+collabID);
+    ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws/'+collabID);
     ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
         var fct;
@@ -23,8 +23,11 @@ function connect(){
             fct = data[key][0];
             val = data[key][1];
             canvas[fct](val);
-            console.log(fct+ " " + val);
           }
+          else if (key === 'color'){
+              canvas.color = (data[key][0]);
+          }
+          console.log(data);
         }
     };
     

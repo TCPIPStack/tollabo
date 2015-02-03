@@ -7,8 +7,9 @@
 package de.tubs.tollabo.ws;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -25,11 +26,28 @@ import javax.websocket.server.ServerEndpoint;
 @ApplicationScoped
 public class DrawingEndpoint {
     
+    private List<String> colors;
+    
+    @PostConstruct
+    public void postConstruct(){
+        this.colors = new ArrayList<>();
+        this.colors.add("red");
+        this.colors.add("blue");
+        this.colors.add("black");
+        this.colors.add("green");
+        this.colors.add("yellow");
+        this.colors.add("grey");
+        this.colors.add("orange");
+        this.colors.add("pink");
+    }
+    
     private static final List<Session> sessions = new ArrayList<>();
     @OnOpen
     public void connect(Session session, @PathParam("collabID") final String collabID){
         sessions.add(session);
         session.getUserProperties().put("collabID", collabID);
+        String color = "{color:"+colors.get(new Random().nextInt(colors.size()))+"}";
+        session.getAsyncRemote().sendText(color);
 
         System.out.println("connection established with: "+session.getId()+ ".." + collabID);
     }

@@ -7,6 +7,7 @@ var canvas = {
     penDown: false,
     fingerUp : true,
     showGrid: true,
+    color: 'red',
 
     init: function() {
       this.canvasElement = document.getElementById('canvas');
@@ -15,7 +16,7 @@ var canvas = {
       this.ctx.lineJoin = "round";
       this.ctx.canvas.width = this.width;
       this.ctx.canvas.height = this.height;
-      this.setColor('red');
+      this.setColor(this.color);
       this.lineWidth(7);
     },
 
@@ -28,7 +29,8 @@ var canvas = {
       }
     },
 
-    paint: function(pos) {
+    paint: function(pos, color) {
+      this.setColor(color);
       this.ctx.lineTo(pos.x, pos.y);
       this.ctx.stroke();
       this.ctx.beginPath();
