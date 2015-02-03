@@ -7,7 +7,9 @@
 package de.tubs.tollabo.ws;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -29,9 +31,11 @@ import javax.websocket.server.ServerEndpoint;
 public class DrawingEndpoint {
     
     private List<String> colors;
+    private Map<Session, String> usedColors;
     
     @PostConstruct
     public void postConstruct(){
+        this.usedColors = new HashMap<>();
         this.colors = new ArrayList<>();
         this.colors.add("red");
         this.colors.add("blue");
@@ -44,12 +48,19 @@ public class DrawingEndpoint {
     }
     
     private static final List<Session> sessions = new ArrayList<>();
+    
     @OnOpen
     public void connect(Session session, @PathParam("collabID") final String collabID){
         sessions.add(session);
         session.getUserProperties().put("collabID", collabID);
-        JsonObject color = Json.createObjectBuilder().add("color", colors.get(new Random().nextInt(colors.size()))).build();
+        
+        String colorS = "" ;
+        do{
+            colorS = colors.get(new Random().nextInt(colors.size()));
+        }while(usedColors.containsValue(colorS));
+        JsonObject color = Json.createObjectBuilder().add("color", colorS).build();
         session.getAsyncRemote().sendText(color.toString());
+        usedColors.put(session, colorS);
 
         System.out.println("connection established with: "+session.getId()+ ".." + collabID);
     }
@@ -57,6 +68,7 @@ public class DrawingEndpoint {
     @OnClose
     public void dissconect(Session session){
         this.sessions.remove(session);
+        this.usedColors.remove(session);
         System.out.println("connection closed by: "+session.getId());
     }
     
