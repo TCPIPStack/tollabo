@@ -3,7 +3,7 @@ var connection = new RTCMultiConnection();
             var wsUri = "ws://192.168.0.2:8080/tollabo/confereceEndpoint";
             var socket = new WebSocket(wsUri);
             connection.socket = socket;
-
+                        var closeRoomButton = document.getElementById('close');
             connection.session = {
                 audio: true,
                 video: true
@@ -32,9 +32,12 @@ var connection = new RTCMultiConnection();
                 }, 1000);
             };
             var sessions = {};
+            var videosContainer = document.getElementById('videos-container') || document.body;
+            var roomsList = document.getElementById('rooms-list');
             connection.onNewSession = function (session) {
-                if (sessions[session.sessionid]|| (session.sessionid.indexOf(collabID) === -1))
+                if (sessions[session.sessionid]) {
                     return;
+                } else if ((session.sessionid.indexOf(collabID) === -1)) return;
                 sessions[session.sessionid] = session;
                 var tr = document.createElement('tr');
                 tr.innerHTML = '<td><strong>' + session.extra['session-name'] + '</strong> is running a conference!</td>' +
@@ -49,17 +52,17 @@ var connection = new RTCMultiConnection();
                     if (!session)
                         throw 'No such session exists.';
                     connection.join(session);
+                    closeRoomButton.disabled = false;
                 };
                 
             };
-            var closeRoomButton = document.getElementById('close');
+
             closeRoomButton.onclick = function () {
                 connection.close();
                 this.disabled = true;
                 document.getElementById('setup-new-conference').disabled = false;
             };
-            var videosContainer = document.getElementById('videos-container') || document.body;
-            var roomsList = document.getElementById('rooms-list');
+
             document.getElementById('setup-new-conference').onclick = function () {
                 this.disabled = true;
                 connection.extra = {
