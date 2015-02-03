@@ -7,28 +7,31 @@
 package de.tubs.tollabo.ws;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 /**
  *
  * @author Benni
  */
-@ServerEndpoint(value = "/ws")
+@ServerEndpoint(value = "/ws/{collabID}")
 @ApplicationScoped
 public class DrawingEndpoint {
     
-    private final List<Session> sessions = new ArrayList<>();
-    
+    private static final List<Session> sessions = new ArrayList<>();
     @OnOpen
-    public void connect(Session session){
-        this.sessions.add(session);
-        System.out.println("connection established with: "+session.getId());
+    public void connect(Session session, @PathParam("collabID") final String collabID){
+        sessions.add(session);
+        session.getUserProperties().put("collabID", collabID);
+
+        System.out.println("connection established with: "+session.getId()+ ".." + collabID);
     }
     
     @OnClose
@@ -39,11 +42,13 @@ public class DrawingEndpoint {
     
     @OnMessage
     public void onMessage(Session session, String msg){
+        String collabID = (String)session.getUserProperties().get("collabID");
         for (Session s : sessions) {
             if(session.getId().equals(s.getId())){
                 continue;
+            } else if(s.getUserProperties().get("collabID").equals(collabID)) {
+                s.getAsyncRemote().sendText(msg);
             }
-            s.getAsyncRemote().sendText(msg);
         }
     }
     

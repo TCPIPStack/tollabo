@@ -8,8 +8,16 @@
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         <script src="RTCMultiConnection.js" type="text/javascript"></script>
-        
-
+        <script type="text/javascript">
+             var collabID;
+             var url = window.location.href;
+             if(url.indexOf("?")!== -1) {
+                 collabID = url.substring(url.indexOf("?")+1, url.indexOf("?")+10);
+             } else {
+                collabID = Math.random().toString(36).substr(2, 9);
+                window.history.pushState("object or string", "Tollabo", "?"+collabID);
+             }
+        </script>
 
         <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
         <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">

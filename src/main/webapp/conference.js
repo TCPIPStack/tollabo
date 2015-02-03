@@ -1,4 +1,4 @@
-            var connection = new RTCMultiConnection();
+var connection = new RTCMultiConnection();
             var wsUri = "ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/confereceEndpoint";
             //var wsUri = "ws://192.168.0.2:8080/tollabo/confereceEndpoint";
             var socket = new WebSocket(wsUri);
@@ -9,6 +9,7 @@
                 video: true
             };
             connection.onstream = function (e) {
+                if(e.type === 'local') return;
                 e.mediaElement.width = 600;
                 videosContainer.insertBefore(e.mediaElement, videosContainer.firstChild);
                 rotateVideo(e.mediaElement);
@@ -32,7 +33,9 @@
             };
             var sessions = {};
             connection.onNewSession = function (session) {
-                if (sessions[session.sessionid])
+                console.log("###" + collabID);
+                console.log("###" + session.sessionid.indexOf(collabID) === -1);
+                if (sessions[session.sessionid]|| (session.sessionid.indexOf(collabID) === -1))
                     return;
                 sessions[session.sessionid] = session;
                 var tr = document.createElement('tr');
@@ -48,6 +51,10 @@
                     if (!session)
                         throw 'No such session exists.';
                     connection.join(session);
+                };
+                var closeRoomButton = tr.querySelector('.close');
+                closeRoomButton.onclick = function () {
+                    connection.close();
                 };
             };
             var videosContainer = document.getElementById('videos-container') || document.body;
