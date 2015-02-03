@@ -33,8 +33,6 @@ var connection = new RTCMultiConnection();
             };
             var sessions = {};
             connection.onNewSession = function (session) {
-                console.log("###" + collabID);
-                console.log("###" + session.sessionid.indexOf(collabID) === -1);
                 if (sessions[session.sessionid]|| (session.sessionid.indexOf(collabID) === -1))
                     return;
                 sessions[session.sessionid] = session;
@@ -52,10 +50,13 @@ var connection = new RTCMultiConnection();
                         throw 'No such session exists.';
                     connection.join(session);
                 };
-                var closeRoomButton = tr.querySelector('.close');
-                closeRoomButton.onclick = function () {
-                    connection.close();
-                };
+                
+            };
+            var closeRoomButton = document.getElementById('close');
+            closeRoomButton.onclick = function () {
+                connection.close();
+                this.disabled = true;
+                document.getElementById('setup-new-conference').disabled = false;
             };
             var videosContainer = document.getElementById('videos-container') || document.body;
             var roomsList = document.getElementById('rooms-list');
@@ -65,7 +66,10 @@ var connection = new RTCMultiConnection();
                     'session-name': document.getElementById('conference-name').value || 'Anonymous'
                 };
                 connection.open();
+                closeRoomButton.disabled = false;
             };
+            
+           
 // setup signaling to search existing sessions
             connection.connect();
             (function () {
