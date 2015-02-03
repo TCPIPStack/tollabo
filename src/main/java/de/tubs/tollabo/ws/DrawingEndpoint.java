@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -46,8 +48,8 @@ public class DrawingEndpoint {
     public void connect(Session session, @PathParam("collabID") final String collabID){
         sessions.add(session);
         session.getUserProperties().put("collabID", collabID);
-        String color = "{color:"+colors.get(new Random().nextInt(colors.size()))+"}";
-        session.getAsyncRemote().sendText(color);
+        JsonObject color = Json.createObjectBuilder().add("color", colors.get(new Random().nextInt(colors.size()))).build();
+        session.getAsyncRemote().sendText(color.toString());
 
         System.out.println("connection established with: "+session.getId()+ ".." + collabID);
     }

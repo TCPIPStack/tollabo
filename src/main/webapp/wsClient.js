@@ -22,10 +22,11 @@ function connect(){
           if (key === 'canvas') {
             fct = data[key][0];
             val = data[key][1];
-            canvas[fct](val);
+            color = data[key][2];
+            canvas[fct](val, color);
           }
           else if (key === 'color'){
-              canvas.color = (data[key][0]);
+              canvas.color = (data[key]);
           }
           console.log(data);
         }

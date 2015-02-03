@@ -24,7 +24,7 @@ function drawInit() {
           x: evt.pageX - offset.left,
           y: evt.pageY - offset.top
         };
-        canvas.paint(pos);
+        canvas.paint(pos, canvas.color);
         send({"canvas": ["paint", pos, canvas.color]});
       }
     };
