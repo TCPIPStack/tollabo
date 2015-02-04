@@ -4,6 +4,7 @@ var ws;
 window.onload = function (){
     var tmpl = document.querySelector('#tmpl');
     tmpl.addEventListener('template-bound', function () {
+        conferenceInit();
         connect();
         drawInit();
         var url = 'pdf/test.pdf';
@@ -12,8 +13,8 @@ window.onload = function (){
 };
 
 function connect(){
-    //ws = new WebSocket("ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws/"+collabID);
-    ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws/'+collabID);
+    ws = new WebSocket("ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws/"+collabID);
+    //ws = new WebSocket('ws://192.168.0.2:8080/tollabo/ws/'+collabID);
     ws.onmessage = function(evt) {
         var data = JSON.parse(evt.data);
         var fct;
