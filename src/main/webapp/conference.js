@@ -35,6 +35,9 @@ function conferenceInit() {
             }
             scaleVideos();
         }, 1000);
+        var toast = document.querySelector('#toast');
+        toast.text = "User has left video session";
+        toast.show();
     };
 
     connection.onNewSession = function (session) {
@@ -49,6 +52,9 @@ function conferenceInit() {
         roomsList.insertBefore(tr, roomsList.firstChild);
         var joinRoomButton = tr.querySelector('.join');
         joinRoomButton.setAttribute('data-sessionid', session.sessionid);
+        var toast = document.querySelector('#toast');
+        toast.text = "New video session "+session.extra['session-name']+" available.";
+        toast.show();
         joinRoomButton.onclick = function () {
             this.disabled = true;
             var sessionid = this.getAttribute('data-sessionid');
@@ -57,6 +63,9 @@ function conferenceInit() {
                 throw 'No such session exists.';
             connection.join(session);
             closeRoomButton.disabled = false;
+            var toast = document.querySelector('#toast');
+            toast.text = "Joined video session.";
+            toast.show();
         };
 
     };

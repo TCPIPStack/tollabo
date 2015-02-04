@@ -36,6 +36,7 @@
         <link rel="import" href="bower_components/core-input/core-input.html">
         <link rel="import" href="bower_components/core-dropdown/core-dropdown.html">
         <link rel="import" href="bower_components/core-menu-button/core-menu-button.html">
+        <link rel="import" href="bower_components/paper-toast/paper-toast.html">
         
         <style>
             html,body {
@@ -140,6 +141,7 @@
                          on-director-route="{{routeChanged}}"></flatiron-director>
 
             <core-scaffold fit>
+                <paper-toast id="toast" text="Die Welt geht unter!"></paper-toast>
                 <core-header-panel navigation mode="seam" flex>
                     <core-toolbar>tollabo</core-toolbar>
                     <core-menu selected="0" >

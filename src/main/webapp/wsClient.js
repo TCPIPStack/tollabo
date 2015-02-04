@@ -7,7 +7,6 @@ window.onload = function (){
         conferenceInit();
         connect();
         drawInit();
-        var url = 'pdf/test.pdf';
     });    
 };
 
@@ -26,10 +25,16 @@ function connect(){
             canvas[fct](val, color);
           }
           else if (key === 'color'){
-              canvas.color = (data[key]);
+            canvas.color = (data[key]);
+            var toast = window.document.querySelector('#toast');
+            toast.text = "You have color "+data[key]+"!";
+            toast.show();
           }
           else if (key === 'document'){
                 displayPDF(data[key]);
+                var toast = document.querySelector('#toast');
+                toast.text = "Recieved Document "+data[key]+" for collaboration.";
+                toast.show();
           }
           console.log(data);
         }
@@ -51,9 +56,12 @@ function send(data) {
 }
 
 function handleDocumentChange(url){
-    var document = {
+    var documentURL = {
         document : url
     };
-    send(document);
+    send(documentURL);
+    var toast = window.document.querySelector('#toast');
+    toast.text = "Document "+url+" added to collaboration.";
+    toast.show();
     displayPDF(url);
 }
