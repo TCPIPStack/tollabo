@@ -33,6 +33,8 @@
         <link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
         <link rel="import" href="bower_components/paper-fab/paper-fab.html">
         <link rel="import" href="bower_components/paper-input/paper-input.html">
+        <link rel="import" href="bower_components/core-input/core-input.html">
+        <link rel="import" href="bower_components/core-collapse/core-collapse.html">
         
         <style>
             html,body {
@@ -156,9 +158,13 @@
 
                 <core-toolbar tool flex>
                   <div flex>{{route}}</div>
-                  <div>
-                      <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
-                  </div>
+                  <core-icon-button icon="chevron-left" title="toggle toolbar" onclick="document.querySelector('#toolbar').toggle();"></core-icon-button>
+                  <core-collapse id="toolbar" >
+                     <div>
+                        <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
+                     </div> 
+                  </core-collapse>
+                  
                   <paper-menu-button>
                         <paper-icon-button icon="more-vert">
                         </paper-icon-button>
@@ -244,8 +250,8 @@
                           <br>
                           <form method="POST" action="upload" enctype="multipart/form-data" >
                               File:
-                              <input type="file" name="file" id="file" /> <br/>
-                              <input type="submit" value="Upload" name="upload" id="upload" />
+                              <input type="file" name="file" id="file" />input> <br/>
+                              <input type="submit" value="Upload" name="upload" id="upload" />input>
                           </form>
                       </div>
                   </core-pages>
