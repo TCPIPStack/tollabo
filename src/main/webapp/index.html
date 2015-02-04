@@ -160,11 +160,14 @@
                   <div flex>{{route}}</div>
                   <core-icon-button icon="chevron-left" title="toggle toolbar" onclick="document.querySelector('#toolbar').toggle();"></core-icon-button>
                   <core-collapse id="toolbar" >
-                     <div>
-                        <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
-                     </div> 
+                  <div>
+                      <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
+                      <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
+                      </core-icon-button>
+                      <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
+                      </core-icon-button>
+                  </div> 
                   </core-collapse>
-                  
                   <paper-menu-button>
                         <paper-icon-button icon="more-vert">
                         </paper-icon-button>
