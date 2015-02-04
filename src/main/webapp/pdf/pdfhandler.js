@@ -1,6 +1,10 @@
 
 function displayPDF (url){
     if(typeof(url)==='undefined') url = 'pdf/test.pdf';
+    var urlSplit = url.split(".");
+    if(urlSplit[ulrSplit.length-1] !== 'pdf'){
+        return;
+    }
     //
     // Disable workers to avoid yet another cross-origin issue (workers need
     // the URL of the script to be loaded, and dynamically loading a cross-origin

@@ -820,6 +820,7 @@ getAnchors : function() {
 
 close : function(el) {
 	var exp = hs.getExpander(el);
+        displayPDF(exp.content.src);
 	if (exp) exp.close();
 	return false;
 }
