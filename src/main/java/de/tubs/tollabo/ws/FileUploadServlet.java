@@ -149,16 +149,17 @@ public class FileUploadServlet extends HttpServlet {
                     while ((read = filecontent.read(bytes)) != -1) {
                         out.write(bytes, 0, read);
                     }
-                    
-                    PDF2Image(PDF_PATH + File.separator + fileName);
-                    
+
+                    PDF2Image(fileName);
+
                     writer.println("New file " + fileName + " created <br>");
                     LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
                             new Object[]{fileName, UPLOADS_PATH});
                     writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/#gallery\" />");
                     writer.println("You are beeing redirect to the main page in five seconds.<br>");
                     writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
-                    
+                    writer.println(request.getParameter(sessionID));
+
                 } else {
                     out = new FileOutputStream(new File(UPLOADS_PATH + File.separator + fileName));
                     filecontent = filePart.getInputStream();
@@ -215,7 +216,7 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     private void PDF2Image(String fileName) {
-        File file = new File(fileName);
+        File file = new File(PDF_PATH + File.separator + fileName);
         RandomAccessFile raf;
         try {
             raf = new RandomAccessFile(file, "r");
@@ -247,17 +248,13 @@ public class FileUploadServlet extends HttpServlet {
                     true // block until drawing is done
             );
 
-            //Dateipfad vor fileName entfernen
-            String[] split = fileName.split("/");
-            fileName = split[split.length - 1];
-
             //Dateiendung (pdf) von fileName entfernen
-            split = fileName.split(".");
             String finalName = "";
-            for (int i = 0; i < split.length - 1; i++) {
-                finalName += split[i];
+            for (int i = 0; i < fileName.length() - 4; i++) {
+                finalName += fileName.charAt(i);
             }
-            ImageIO.write(img, "png", new File(UPLOADS_PATH + File.separator + finalName + ".png"));
+            finalName += ".png";
+            ImageIO.write(img, "png", new File(UPLOADS_PATH + File.separator + finalName));
 
             Thumbnails.of(new File(UPLOADS_PATH + File.separator + finalName))
                     .size(160, 160)
