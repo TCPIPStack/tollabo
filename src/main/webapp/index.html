@@ -158,6 +158,10 @@
                   <div flex>{{route}}</div>
                   <div>
                       <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
+                      <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
+                      </core-icon-button>
+                      <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
+                      </core-icon-button>
                   </div>
                   <paper-menu-button>
                         <paper-icon-button icon="more-vert">
