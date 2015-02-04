@@ -1,16 +1,15 @@
 var canvas = {    
-    
+
     canvasElement : null,
     width: 800,
     height: 600,
     ctx: null,
     penDown: false,
     fingerUp : true,
-    showGrid: true,
     color: 'red',
 
     init: function() {
-      this.canvasElement = document.getElementById('canvas');
+      this.canvasElement = document.querySelector('#canvas');
       this.ctx = this.canvasElement.getContext("2d");
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = "round";
@@ -21,12 +20,8 @@ var canvas = {
     },
 
     clear: function() {
-      this.ctx.canvas.width = this.width;
-      this.ctx.canvas.height = this.height;
-      if (!this.showGrid) {
-        this.ctx.fillStyle = "white";
+        this.ctx.fillStyle = "#E5E5E5";
         this.ctx.fillRect(0 ,0 , this.width, this.height);
-      }
     },
 
     paint: function(pos, color) {
@@ -53,5 +48,7 @@ var canvas = {
       this.thickness = width;
       this.ctx.lineWidth = width;
     }
-    
+
 };    
+
+   

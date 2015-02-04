@@ -1,15 +1,15 @@
 
 var ws;
 
-window.onload = function() {
-    //connect();
-    //drawInit();
+window.onload = function (){
+    var tmpl = document.querySelector('#tmpl');
+    tmpl.addEventListener('template-bound', function () {
+        connect();
+        drawInit();
+        var url = 'pdf/test.pdf';
+        displayPDF(url);
+    });    
 };
-
-//window.addEventListener('polymer-ready', function(e) {
-    connect();
-    drawInit();
-//});
 
 function connect(){
     //ws = new WebSocket("ws://tollabo.ibr.cs.tu-bs.de:8080/tollabo/ws/"+collabID);

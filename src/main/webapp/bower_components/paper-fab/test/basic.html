@@ -10,32 +10,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>paper-button basic tests</title>
+  <title>paper-fab basic tests</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
 
-  <link href="../paper-button.html" rel="import">
+  <link href="../../core-icons/core-icons.html" rel="import">
+  <link href="../paper-fab.html" rel="import">
 
 </head>
 <body>
 
-  <paper-button id="button1">button</paper-button>
+  <div style="line-height:30px;">
+    <paper-fab id="fab1" icon="add"></paper-fab>
+  </div>
 
   <script>
 
-    var b1 = document.getElementById('button1');
+    var f1 = document.getElementById('fab1');
 
-    test('can set raised imperatively', function(done) {
-      assert.ok(!b1.shadowRoot.querySelector('paper-shadow'));
-      b1.raised = true;
-      flush(function() {
-        var shadow = b1.shadowRoot.querySelector('paper-shadow');
-        assert.ok(shadow);
-        assert.notEqual(getComputedStyle(shadow.$['shadow-top'])['box-shadow'], 'none');
-        done();
-      });
+    function centerOf(element) {
+      var rect = element.getBoundingClientRect();
+      return {left: rect.left + rect.width / 2, top: rect.top + rect.height / 2};
+    }
+
+    test('renders correctly independent of line height', function() {
+      assert.deepEqual(centerOf(f1.$.icon), centerOf(f1));
     });
 
   </script>

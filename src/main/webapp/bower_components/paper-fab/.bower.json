@@ -1,11 +1,11 @@
 {
-  "name": "paper-button",
+  "name": "paper-fab",
   "private": true,
   "dependencies": {
     "polymer": "Polymer/polymer#^0.5",
-    "core-a11y-keys": "Polymer/core-a11y-keys#^0.5",
-    "core-focusable": "Polymer/core-focusable#^0.5",
     "core-icon": "Polymer/core-icon#^0.5",
+    "core-icons": "Polymer/core-icons#^0.5",
+    "paper-button": "Polymer/paper-button#^0.5",
     "paper-ripple": "Polymer/paper-ripple#^0.5",
     "paper-shadow": "Polymer/paper-shadow#^0.5"
   },
@@ -13,15 +13,15 @@
     "web-component-tester": "Polymer/web-component-tester#^1.1.4"
   },
   "version": "0.5.4",
-  "homepage": "https://github.com/Polymer/paper-button",
+  "homepage": "https://github.com/Polymer/paper-fab",
   "_release": "0.5.4",
   "_resolution": {
     "type": "version",
     "tag": "0.5.4",
-    "commit": "f3f3657c008b745f1f24e952544c18e587bf56a3"
+    "commit": "8835b5b178eae468626d08d4861a327bfee29b06"
   },
-  "_source": "git://github.com/Polymer/paper-button.git",
+  "_source": "git://github.com/Polymer/paper-fab.git",
   "_target": "~0.5.4",
-  "_originalSource": "Polymer/paper-button",
+  "_originalSource": "Polymer/paper-fab",
   "_direct": true
 }
