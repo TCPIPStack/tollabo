@@ -1,7 +1,7 @@
 
 function displayPDF (url){
     if(typeof(url)==='undefined') url = 'pdf/test.pdf';
-    alert(url);
+    console.log(url);
 
     //
     // Disable workers to avoid yet another cross-origin issue (workers need
