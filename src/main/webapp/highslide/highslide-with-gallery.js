@@ -820,7 +820,30 @@ getAnchors : function() {
 
 close : function(el) {
 	var exp = hs.getExpander(el);
-        displayPDF(exp.content.src);
+        var src = exp.content.src;
+        
+        var split = src.split("/");
+        var fileName =split[split.length-1];
+        src = "uploads/" + fileName;
+    //    alert("FileName: " + fileName);
+ 
+        // Dateiendung abschneiden
+        split = fileName.split(".");
+        var pdf = "pdf/";
+        for (var i=0; i < split.length - 1; i++) {
+            pdf+=split[i];
+        }
+        pdf += ".pdf";
+      //  alert("checking for: " + pdf);
+        if (UrlExists(pdf)) {
+         //   alert("check okay");
+            displayPDF(pdf);
+        }
+        else {
+       //     alert("check not okay");
+            displayPDF(src);
+        }
+        
 	if (exp) exp.close();
 	return false;
 }
@@ -2655,4 +2678,11 @@ hs.addEventListener(document, 'mouseup', hs.mouseClickHandler);
 
 hs.addEventListener(document, 'ready', hs.getAnchors);
 hs.addEventListener(window, 'load', hs.preloadImages);
+}
+function UrlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
 }
