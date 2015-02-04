@@ -35,6 +35,7 @@
         <link rel="import" href="bower_components/paper-input/paper-input.html">
         <link rel="import" href="bower_components/core-input/core-input.html">
         <link rel="import" href="bower_components/core-dropdown/core-dropdown.html">
+        <link rel="import" href="bower_components/core-menu-button/core-menu-button.html">
         
         <style>
             html,body {
@@ -157,19 +158,12 @@
                 </core-header-panel>
 
                 <core-toolbar tool flex>
-                  <div flex>{{route}}</div>
-                    <core-menu-button>
-                      <core-icon-button icon="expand-more"></core-icon-button>
-                      <core-dropdown class="dropdown">
-                        <core-menu>
-                            <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
-                            <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
-                            </core-icon-button>
-                            <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
-                            </core-icon-button>
-                        </core-menu>
-                      </core-dropdown>
-                    </core-menu-button>
+                    <div flex>{{route}}</div>
+                    <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
+                    <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
+                    </core-icon-button>
+                    <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
+                    </core-icon-button>
                   <paper-menu-button>
                         <paper-icon-button icon="more-vert">
                         </paper-icon-button>
