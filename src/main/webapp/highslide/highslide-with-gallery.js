@@ -837,11 +837,11 @@ close : function(el) {
       //  alert("checking for: " + pdf);
         if (UrlExists(pdf)) {
          //   alert("check okay");
-            displayPDF(pdf);
+            handleDocumentChange(pdf);
         }
         else {
        //     alert("check not okay");
-            displayPDF(src);
+            handleDocumentChange(src);
         }
         
 	if (exp) exp.close();

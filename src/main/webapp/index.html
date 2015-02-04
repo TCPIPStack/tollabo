@@ -140,18 +140,17 @@
                          on-director-route="{{routeChanged}}"></flatiron-director>
 
             <core-scaffold fit>
-
                 <core-header-panel navigation mode="seam" flex>
                     <core-toolbar>tollabo</core-toolbar>
-                    <core-menu>
-                        <paper-item icon="" label="drawing">
-                          <a href="#drawing">drawing</a>
+                    <core-menu selected="0" >
+                        <paper-item icon="" label="drawing" onclick>
+                            <a href="#drawing" onclick="document.querySelector('#toolbar').hidden = false;">drawing</a>
                         </paper-item>
                         <paper-item >
-                          <a href="#video">video</a>
+                          <a href="#video" onclick="document.querySelector('#toolbar').hidden = true;">video</a>
                         </paper-item>
                         <paper-item >
-                          <a href="#gallery">gallery</a>
+                          <a href="#gallery" onclick="document.querySelector('#toolbar').hidden = true;">gallery</a>
                         </paper-item>
                     </core-menu>                
 
@@ -159,11 +158,14 @@
 
                 <core-toolbar tool flex>
                     <div flex>{{route}}</div>
-                    <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
-                    <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
-                    </core-icon-button>
-                    <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
-                    </core-icon-button>
+                    <div id="toolbar">
+                        <core-icon-button id="draw" icon="create" title="draw" onclick="enableDraw();"></core-icon-button>
+                        <core-icon-button icon="settings-ethernet" title="mark horizontal" id="horizontalButton" onclick="lineDraw('horizontal');">
+                        </core-icon-button>
+                        <core-icon-button style="transform: rotate(90deg);" icon="settings-ethernet" title="mark vertical" id="verticalButton" onclick="lineDraw('vertical');">
+                        </core-icon-button>
+                        <core-icon-button icon="clear" title="clear canvas" onclick="displayPDF();"></core-icon-button>
+                    </div>
                   <paper-menu-button>
                         <paper-icon-button icon="more-vert">
                         </paper-icon-button>

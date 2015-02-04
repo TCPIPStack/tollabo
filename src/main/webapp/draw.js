@@ -3,19 +3,23 @@ var direction = false;
 function lineDraw(dir) {
     if (dir === direction) {
         direction = false;
-        document.querySelector("#" + dir + "Button").style.backgroundColor = "#065B81"
+        document.querySelector("#" + dir + "Button").style.backgroundColor = "#065B81";
     } else {
         if (direction) {
-            document.querySelector("#" + direction + "Button").style.backgroundColor = "#065B81"
+            document.querySelector("#" + direction + "Button").style.backgroundColor = "#065B81";
         }
         direction = dir;
         document.querySelector("#" + direction + "Button").style.backgroundColor = "#4285f4";
     }
 }
 
+var canvasElement;
+var drawEnabled = false;
+var enableDraw; 
+
 function drawInit() {
     canvas.init();
-    var canvasElement = canvas.canvasElement;
+    canvasElement = canvas.canvasElement;
     var h;
     var startMouseDraw = function (evt) {
         var offset = $(this).offset();
@@ -95,7 +99,7 @@ function drawInit() {
             send({"canvas": ["moveTo", pos]});
             canvas.fingerUp = false;
         }
-        canvas.paint(pos);
+        canvas.paint(pos, canvas.color);
         send({"canvas": ["paint", pos, canvas.color]});
     };
 
@@ -108,14 +112,31 @@ function drawInit() {
         canvas.penDown = false;
         h = false;
     };
+    enableDraw = function (){
+        if(drawEnabled === false){
+            drawEnabled = true;
+            document.querySelector('#draw').style.backgroundColor = "#4285f4";
 
-    canvasElement.addEventListener('mousedown', startMouseDraw);
+            canvasElement.addEventListener('mousedown', startMouseDraw);
 
-    canvasElement.addEventListener('touchmove', touchDraw, false);
-    canvasElement.addEventListener('mousemove', mouseDraw);
+            canvasElement.addEventListener('touchmove', touchDraw, false);
+            canvasElement.addEventListener('mousemove', mouseDraw);
 
-    canvasElement.addEventListener('touchend', touchEnd);
-    canvasElement.addEventListener('mouseup', endMouseDraw);
+            canvasElement.addEventListener('touchend', touchEnd);
+            canvasElement.addEventListener('mouseup', endMouseDraw);
+        }
+        else {
+            drawEnabled = false;
+            document.querySelector('#draw').style.backgroundColor = "#065B81";
+            canvasElement.removeEventListener('mousedown', startMouseDraw);
+
+            canvasElement.removeEventListener('touchmove', touchDraw, false);
+            canvasElement.removeEventListener('mousemove', mouseDraw);
+
+            canvasElement.removeEventListener('touchend', touchEnd);
+            canvasElement.removeEventListener('mouseup', endMouseDraw);
+        }
+    };
 
 }
 ;

@@ -8,7 +8,6 @@ window.onload = function (){
         connect();
         drawInit();
         var url = 'pdf/test.pdf';
-        displayPDF(url);
     });    
 };
 
@@ -29,6 +28,9 @@ function connect(){
           else if (key === 'color'){
               canvas.color = (data[key]);
           }
+          else if (key === 'document'){
+                displayPDF(data[key]);
+          }
           console.log(data);
         }
     };
@@ -46,4 +48,12 @@ function send(data) {
   if (ws && ws.readyState === 1) {
     ws.send(JSON.stringify(data));
   }
+}
+
+function handleDocumentChange(url){
+    var document = {
+        document : url
+    };
+    send(document);
+    displayPDF(url);
 }

@@ -1,6 +1,8 @@
 
+var lastURL = 'pdf/test.pdf';
 function displayPDF (url){
-    if(typeof(url)==='undefined') url = 'pdf/test.pdf';
+    if(typeof(url)==='undefined') url = lastURL;
+    lastURL = url;
     console.log(url);
 
     //
