@@ -120,6 +120,8 @@ public class FileUploadServlet extends HttpServlet {
         processRequest(request, response);
 
         response.setContentType("text/html;charset=UTF-8");
+        
+        String sessionID = request.getParameter("sessionID");
 
         // Create path components to save the file
         final Part filePart = request.getPart("file");
@@ -133,7 +135,7 @@ public class FileUploadServlet extends HttpServlet {
         if (!testExtension.contains("jpg") && !testExtension.contains("png") && !testExtension.contains("pdf")) {
             writer.println("Please upload an image file of type *.jpg or *.png <br>");
             writer.println("Your filetype: " + testExtension + "<br>");
-            writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/#gallery\" />");
+            writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
             writer.println("You are beeing redirect to the main page in five seconds.<br>");
             writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
         } else {
@@ -155,10 +157,9 @@ public class FileUploadServlet extends HttpServlet {
                     writer.println("New file " + fileName + " created <br>");
                     LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
                             new Object[]{fileName, UPLOADS_PATH});
-                    writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/#gallery\" />");
+                    writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
                     writer.println("You are beeing redirect to the main page in five seconds.<br>");
                     writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
-                    writer.println(request.getParameter(sessionID));
 
                 } else {
                     out = new FileOutputStream(new File(UPLOADS_PATH + File.separator + fileName));
@@ -180,7 +181,7 @@ public class FileUploadServlet extends HttpServlet {
                             new Object[]{fileName, UPLOADS_PATH});
                     writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/#gallery\" />");
                     writer.println("You are beeing redirect to the main page in five seconds.<br>");
-                    writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
+                    writer.println("Otherwise, click <a href=\"/tollabo/?" + sessionID + "#gallery\" </a> here <br>");
                 }
 
             } catch (FileNotFoundException fne) {
