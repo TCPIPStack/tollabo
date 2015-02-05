@@ -120,90 +120,97 @@ public class FileUploadServlet extends HttpServlet {
         processRequest(request, response);
 
         response.setContentType("text/html;charset=UTF-8");
-        
-        String sessionID = request.getParameter("sessionID");
 
+        String sessionID = request.getParameter("sessionID");
+        final PrintWriter writer = response.getWriter();
         // Create path components to save the file
         final Part filePart = request.getPart("file");
         final String fileName = getFileName(filePart);
-
-        OutputStream out = null;
-        InputStream filecontent = null;
-        final PrintWriter writer = response.getWriter();
-
-        String testExtension = fileName.substring(fileName.length() - 3, fileName.length());
-        if (!testExtension.contains("jpg") && !testExtension.contains("png") && !testExtension.contains("pdf")) {
-            writer.println("Please upload an image file of type *.jpg or *.png <br>");
-            writer.println("Your filetype: " + testExtension + "<br>");
+        if (fileName.length() == 0) {
+            writer.println("Please choose a file before clicking on upload!");
             writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
             writer.println("You are beeing redirect to the main page in five seconds.<br>");
-            writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
+            writer.println("Otherwise, click <a href=\"/tollabo/" + sessionID + "#gallery\" </a> here <br>");
         } else {
 
-            try {
-                if (testExtension.contains("pdf")) {
-                    out = new FileOutputStream(new File(PDF_PATH + File.separator + fileName));
-                    filecontent = filePart.getInputStream();
+            OutputStream out = null;
+            InputStream filecontent = null;
 
-                    int read;
-                    final byte[] bytes = new byte[1024];
+            String testExtension = fileName.substring(fileName.length() - 3, fileName.length());
+            if (!testExtension.contains("jpg") && !testExtension.contains("png") && !testExtension.contains("pdf")) {
+                writer.println("Please upload an image file of type *.jpg or *.png <br>");
+                writer.println("Your filetype: " + testExtension + "<br>");
+                writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
+                writer.println("You are beeing redirect to the main page in five seconds.<br>");
+                writer.println("Otherwise, click <a href=\"/tollabo/" + sessionID + "#gallery\" </a> here <br>");
+            } else {
 
-                    while ((read = filecontent.read(bytes)) != -1) {
-                        out.write(bytes, 0, read);
+                try {
+                    if (testExtension.contains("pdf")) {
+                        out = new FileOutputStream(new File(PDF_PATH + File.separator + fileName));
+                        filecontent = filePart.getInputStream();
+
+                        int read;
+                        final byte[] bytes = new byte[1024];
+
+                        while ((read = filecontent.read(bytes)) != -1) {
+                            out.write(bytes, 0, read);
+                        }
+
+                        PDF2Image(fileName);
+
+                        writer.println("New file " + fileName + " created <br>");
+                        LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
+                                new Object[]{fileName, UPLOADS_PATH});
+                        writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
+                        writer.println("You are beeing redirect to the main page in five seconds.<br>");
+                        writer.println("Otherwise, click <a href=\"/tollabo/" + sessionID + "#gallery\" </a> here <br>");
+
+                    } else {
+                        out = new FileOutputStream(new File(UPLOADS_PATH + File.separator + fileName));
+                        filecontent = filePart.getInputStream();
+
+                        int read;
+                        final byte[] bytes = new byte[1024];
+
+                        while ((read = filecontent.read(bytes)) != -1) {
+                            out.write(bytes, 0, read);
+                        }
+
+                        Thumbnails.of(new File(UPLOADS_PATH + File.separator + fileName))
+                                .size(160, 160)
+                                .toFile(new File(THUMBNAILS_PATH + File.separator + fileName));
+
+                        writer.println("New file " + fileName + " created <br>");
+                        LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
+                                new Object[]{fileName, UPLOADS_PATH});
+                        writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/" + sessionID + "#gallery\" />");
+                        writer.println("You are beeing redirect to the main page in five seconds.<br>");
+                        writer.println("Otherwise, click <a href=\"/tollabo/?" + sessionID + "#gallery\" </a> here <br>");
                     }
 
-                    PDF2Image(fileName);
+                } catch (FileNotFoundException fne) {
+                    writer.println("You either did not specify a file to upload or are "
+                            + "trying to upload a file to a protected or nonexistent "
+                            + "location.");
+                    writer.println("<br/> ERROR: " + fne.getMessage());
 
-                    writer.println("New file " + fileName + " created <br>");
-                    LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
-                            new Object[]{fileName, UPLOADS_PATH});
-                    writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/?" + sessionID + "#gallery\" />");
-                    writer.println("You are beeing redirect to the main page in five seconds.<br>");
-                    writer.println("Otherwise, click <a href=\"/tollabo/#gallery\" </a> here <br>");
-
-                } else {
-                    out = new FileOutputStream(new File(UPLOADS_PATH + File.separator + fileName));
-                    filecontent = filePart.getInputStream();
-
-                    int read;
-                    final byte[] bytes = new byte[1024];
-
-                    while ((read = filecontent.read(bytes)) != -1) {
-                        out.write(bytes, 0, read);
+                    LOGGER.log(Level.SEVERE, "Problems during file upload. Error: {0}",
+                            new Object[]{fne.getMessage()});
+                } finally {
+                    if (out != null) {
+                        out.close();
                     }
-
-                    Thumbnails.of(new File(UPLOADS_PATH + File.separator + fileName))
-                            .size(160, 160)
-                            .toFile(new File(THUMBNAILS_PATH + File.separator + fileName));
-
-                    writer.println("New file " + fileName + " created <br>");
-                    LOGGER.log(Level.INFO, "File {0} being uploaded to {1}",
-                            new Object[]{fileName, UPLOADS_PATH});
-                    writer.println("<meta http-equiv=\"refresh\" content=\"5;URL=/tollabo/#gallery\" />");
-                    writer.println("You are beeing redirect to the main page in five seconds.<br>");
-                    writer.println("Otherwise, click <a href=\"/tollabo/?" + sessionID + "#gallery\" </a> here <br>");
-                }
-
-            } catch (FileNotFoundException fne) {
-                writer.println("You either did not specify a file to upload or are "
-                        + "trying to upload a file to a protected or nonexistent "
-                        + "location.");
-                writer.println("<br/> ERROR: " + fne.getMessage());
-
-                LOGGER.log(Level.SEVERE, "Problems during file upload. Error: {0}",
-                        new Object[]{fne.getMessage()});
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                if (filecontent != null) {
-                    filecontent.close();
-                }
-                if (writer != null) {
-                    writer.close();
+                    if (filecontent != null) {
+                        filecontent.close();
+                    }
+                    if (writer != null) {
+                        writer.close();
+                    }
                 }
             }
         }
+
     }
 
     /**
